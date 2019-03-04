@@ -45,6 +45,14 @@ def setupService():
             pickle.dump(creds, token)
 
     service = build('gmail', 'v1', credentials=creds)
+    response = service.users().messages().list(userId="me"
+                                               ).execute()
+    messages = []
+    if 'messages' in response:
+      messages.extend(response['messages'])
+    msg_id = messages[0]["id"]
+    message = service.users().messages().get(userId="me", id=msg_id).execute()
+    print(message["snippet"])
     return service
 
     # Call the Gmail API

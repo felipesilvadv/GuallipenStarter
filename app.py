@@ -3,5 +3,80 @@
 # Junto con correr el Frontend de la misma
 from threading import Thread
 from src.mailer import sendMail
-from src.apiHandler import readData, readLocal, updateData
-from random import choice
+from src.apiHandler import readData, readLocal, updateData, deletePedidos, createData
+#import webbrowser
+
+def updatePedidos(pedidosLocales):
+    pedidos = readData('pedidos')
+    clientes = readData('clientes')
+    for i in range(len(pedidosLocales)):
+        actualizarPedido(pedidosLocales[i], pedidos, clientes)
+        print(clientes)
+
+
+def actualizarPedido(pedidolocal, pedidos, clientes):
+    idPedido = pedidolocal["idPedido"]
+    pedido = None
+    for i in range(len(pedidos)):
+        if int(pedidos[i]['orden']) == idPedido:
+            pedido = pedidos[i]
+            break
+    if pedido:
+        if pedido['estado'] > 0 and pedido["estado"] < pedidolocal["estadoActual"]:
+            data = {
+                'estado': pedidolocal["estadoActual"]
+            }
+            #print("Hago put en pedidos/{}\ndata: {}".format(pedido["_id"], data))
+            updateData(data, 'pedidos', pedido["_id"])
+    else:
+        idCliente = pedidolocal['idCliente']
+        cliente = None
+        for i in range(len(clientes)):
+            if int(clientes[i]['id']) == idCliente:
+                cliente = clientes[i]
+                break
+        if cliente is None:
+            datos_cliente ={
+                'id': idCliente,
+                'nombre': pedidolocal['nameCliente']
+            }
+
+            cliente = createData(datos_cliente, 'clientes')
+            clientes.append(cliente)
+            #print("Se crea cliente con\ndatos = {}".format(datos_cliente))
+
+        data = {
+            'orden': idPedido,
+            'estado': pedidolocal['estadoActual'],
+            'cliente': cliente['_id']
+        }
+        pedido = createData(data, 'pedidos')
+        #print("Se crea pedido\nPedido = {}".format(data))
+
+def revisarPedidos(carpeta):
+    previo = None
+    while True:
+        datos = readLocal(carpeta)
+        if datos != previo:
+            updatePedidos(datos)
+        previo = datos
+        deletePedidos()
+
+def revisarRutas():
+    while True:
+        pass
+
+
+revisarPedidos('C:\\FTP\\')
+#url = 'http://docs.python.org/'
+
+# MacOS
+#chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
+
+# Windows
+#chrome_path = 'C:\\User\\dgsasac04\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe %s'
+
+# Linux
+#chrome_path = '/usr/bin/google-chrome %s'
+
+#webbrowser.get(chrome_path).open(url)

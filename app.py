@@ -68,7 +68,7 @@ def revisarRutas():
         pass
 
 def abrirGuallipen():
-    os.system('npm start --prefix /home/felipe/Documentos/Davis\ Graphics/GuallipenFront2/')
+    os.system('npm start --prefix C:\\Users\\dgsasac04\\AppData\\Local\\GuallipenFront-master')
 
 
 pedidos = Thread(target=revisarPedidos, args=('C:\\FTP\\',))

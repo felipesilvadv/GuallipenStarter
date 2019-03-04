@@ -5,6 +5,7 @@ from threading import Thread
 from src.mailer import sendMail
 from src.apiHandler import readData, readLocal, updateData, deletePedidos, createData
 #import webbrowser
+import os
 
 def updatePedidos(pedidosLocales):
     pedidos = readData('pedidos')
@@ -66,8 +67,14 @@ def revisarRutas():
     while True:
         pass
 
+def abrirGuallipen():
+    os.system('npm start --prefix /home/felipe/Documentos/Davis\ Graphics/GuallipenFront2/')
 
-revisarPedidos('C:\\FTP\\')
+
+pedidos = Thread(target=revisarPedidos, args=('C:\\FTP\\',))
+Guallipen = Thread(target=abrirGuallipen)
+Guallipen.start()
+pedidos.start()
 #url = 'http://docs.python.org/'
 
 # MacOS

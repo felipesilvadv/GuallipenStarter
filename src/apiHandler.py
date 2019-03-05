@@ -118,6 +118,6 @@ def arreglarDatos(archivo):
 # Verica si la ruta entregada es válida
 def isValid(route):
     validas = ["liberados", "facturados", "ingresados", "clientes",
-               "pedidos", "estados", "orden", "ruta", "transportista",
-               "vendedor"]
+               "pedidos", "estados", "ordenes", "rutas", "transportistas",
+               "vendedores"]
     return route in validas

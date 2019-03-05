@@ -101,6 +101,7 @@ def arreglarDatos(archivo):
     texto = texto.replace('cantidad:', '"cantidad":')
     texto = texto.replace('idProducto:', '"idProducto":')
     texto = texto.replace('idCliente:', '"idCliente":')
+    texto = texto.replace(':,', ':"",')
     lista = texto.split('"idProducto":')
     for i in range(1, len(lista)):
         palabra = lista[i]

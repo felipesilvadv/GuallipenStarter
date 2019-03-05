@@ -101,13 +101,13 @@ def arreglarDatos(archivo):
     texto = texto.replace('cantidad:', '"cantidad":')
     texto = texto.replace('idProducto:', '"idProducto":')
     texto = texto.replace('idCliente:', '"idCliente":')
-    texto = texto.replace(':,', ':"",')
     lista = texto.split('"idProducto":')
     for i in range(1, len(lista)):
         palabra = lista[i]
         coma = palabra.find(",")
         lista[i] = '"{}"{}'.format(palabra[0:coma], palabra[coma:])
     texto = '"idProducto":'.join(lista)
+    texto = texto.replace(':,', ':"",')
     try:
         datos = json.loads(texto)['data']['row']
     except Exception as err:

@@ -108,9 +108,10 @@ def arreglarDatos(archivo):
         lista[i] = '"{}"{}'.format(palabra[0:coma], palabra[coma:])
     texto = '"idProducto":'.join(lista)
     try:
-        return json.loads(texto)['data']['row']
+        datos = json.loads(texto)['data']['row']
     except Exception as err:
-        return json.loads(texto, encoding='latin-1')['data']['row']
+        datos = json.loads(texto, encoding='latin-1')['data']['row']
+    return list(filter(lambda x: x["folProducto"] == 1000, datos))
 
 
 # Verica si la ruta entregada es válida

@@ -4,6 +4,7 @@ from requests import get, post, put, delete
 import json
 from os import listdir
 from re import match
+from datetime import date, datetime
 
 
 # Obtiene datos de la API para luego identificar y posteriormente actualizar valores
@@ -21,7 +22,7 @@ def readLocal(carpeta):
     datos = list(filter(lambda x: match(pattern, x) is not None, listdir(carpeta)))
     datos.sort()
     datos.reverse()
-    return datos[0]
+    return arreglarDatos(carpeta  + datos[0]), datos
 
 
 # Actuliza valores en la API
@@ -54,15 +55,39 @@ def deleteData(route, id):
 def deletePedidos():
     url = "https://frozen-retreat-29770.herokuapp.com/api/pedidos/"
     r = get(url)
-    ids = filter(lambda x: x["estado"] == -1, map(lambda x: x["_id"], json.loads(r.text)))
+    ids = map(lambda x: x["_id"], filter(lambda x: x["estado"] == -1 or x["estado"] == 980, json.loads(r.text)))
     for id in ids:
         deleteData("pedidos", id)
 
+def deleteRutas():
+    url = "https://frozen-retreat-29770.herokuapp.com/api/rutas/"
+    r = get(url)
+    ids = map(lambda x: x["_id"], json.loads(r.text))
+    for id in ids:
+        deleteData("rutas", id)
+
+def borrarRutas():
+    if 'runday.json' in listdir():
+        with open('runday.json') as file:
+            dia = json.loads(file.read())["dia"]
+        if date.today() != datetime.strptime(dia, '%Y-%m-%d').date():
+            with open('runday.json', 'w') as file:
+                file.write(json.dumps({'dia': str(date.today())}))
+            return True
+        else:
+            return False
+    else:
+        with open('runday.json', 'w') as file:
+            file.write(json.dumps({'dia': str(date.today())}))
 
 
 def arreglarDatos(archivo):
-    with open(archivo) as file:
-        texto = file.read()
+    try:
+        with open(archivo) as file:
+            texto = file.read()
+    except UnicodeDecodeError as err:
+        with open(archivo, 'rb') as file:
+            texto = file.read().decode('latin-1')
     texto = texto.replace('data:', '"data":')
     texto = texto.replace('row:', '"row":')
     texto = texto.replace('SO:', '"SO":')
@@ -82,7 +107,7 @@ def arreglarDatos(archivo):
         coma = palabra.find(",")
         lista[i] = '"{}"{}'.format(palabra[0:coma], palabra[coma:])
     texto = '"idProducto":'.join(lista)
-    return json.loads(texto)
+    return json.loads(texto)['data']['row']
 
 
 # Verica si la ruta entregada es válida

@@ -2,8 +2,8 @@
 # los datos proporcionados por el Lab para actualizarlos en la API,
 # Junto con correr el Frontend de la misma
 from threading import Thread
-from src.mailer import sendMail
-from src.apiHandler import readData, readLocal, updateData, deletePedidos, createData
+#from src.mailer import sendMail
+from src.apiHandler import readData, readLocal, updateData, deletePedidos, createData, borrarRutas, deleteRutas
 #import webbrowser
 import os
 
@@ -12,7 +12,7 @@ def updatePedidos(pedidosLocales):
     clientes = readData('clientes')
     for i in range(len(pedidosLocales)):
         actualizarPedido(pedidosLocales[i], pedidos, clientes)
-        print(clientes)
+
 
 
 def actualizarPedido(pedidolocal, pedidos, clientes):
@@ -57,24 +57,28 @@ def actualizarPedido(pedidolocal, pedidos, clientes):
 def revisarPedidos(carpeta):
     previo = None
     while True:
-        datos = readLocal(carpeta)
-        if datos != previo:
+        datos, nombre = readLocal(carpeta)
+        if nombre != previo:
             updatePedidos(datos)
         previo = datos
         deletePedidos()
 
 def revisarRutas():
-    while True:
-        pass
+    if borrarRutas():
+        deleteRutas()
 
 def abrirGuallipen():
     os.system('npm start --prefix C:\\Users\\dgsasac04\\AppData\\Local\\GuallipenFront-master')
 
-
-pedidos = Thread(target=revisarPedidos, args=('C:\\FTP\\',))
+carpeta = 'C:\\FTP\\'
+#carpeta = 'data/'
+revisarRutas()
+pedidos = Thread(target=revisarPedidos, args=(carpeta,))
 Guallipen = Thread(target=abrirGuallipen)
 Guallipen.start()
 pedidos.start()
+
+#print(readLocal('C:\\FTP\\')['data']['row'][0])
 #url = 'http://docs.python.org/'
 
 # MacOS
